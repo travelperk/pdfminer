@@ -492,8 +492,28 @@ class LTLayoutContainer(LTContainer):
         self.groups = None
         return
 
+    def check_blocker_in_the_horizontal_middle(self, obj1, obj2, blocker):
+        if isinstance(blocker, LTLine):
+            # first is the line at the right height?
+            if blocker.y1 >= obj1.y0 and blocker.y0<=obj1.y1:
+                # is it in the middle of both objects
+                segment_x = sorted( [max(obj1.x0, obj2.x0), min(obj1.x1, obj2.x1)] )
+                return blocker.x0 >= segment_x[0] and blocker.x0 <= segment_x[1]
+        return
+
+    def check_blocker_in_the_vertical_middle(self, obj1, obj2, blocker):
+        if isinstance(blocker, LTLine):
+            # first is the line at the right height?
+            if blocker.x1 >= obj1.x0 and blocker.x0<=obj1.x1:
+                # is it in the middle of both objects
+                segment_y = sorted([max(obj1.y0, obj2.y0), min(obj1.y1, obj2.y1)])
+                return blocker.y0 >= segment_y[0] and blocker.y0 <= segment_y[1]
+        return
+
+
+
     # group_objects: group text object to textlines.
-    def group_objects(self, laparams, objs):
+    def group_objects(self, laparams, objs, blockers=None):
         obj0 = None
         line = None
         for obj1 in objs:
@@ -514,7 +534,13 @@ class LTLayoutContainer(LTContainer):
                            obj0.voverlap(obj1)) and
                           (obj0.hdistance(obj1) <
                            max(obj0.width, obj1.width) * laparams.char_margin))
-                
+                if halign and blockers:
+                    # check if there is any line or rect object in the way
+                    for a_blocker in blockers:
+                        if self.check_blocker_in_the_horizontal_middle(obj0, obj1, a_blocker):
+                            halign = False
+                            break
+
                 # valign: obj0 and obj1 is vertically aligned.
                 #
                 #   +------+
@@ -536,7 +562,13 @@ class LTLayoutContainer(LTContainer):
                            obj0.hoverlap(obj1)) and
                           (obj0.vdistance(obj1) <
                            max(obj0.height, obj1.height) * laparams.char_margin))
-                
+                if valign and blockers:
+                    # check if there is any line or rect object in the way
+                    for a_blocker in blockers:
+                        if self.check_blocker_in_the_vertical_middle(obj0, obj1, a_blocker):
+                            valign = False
+                            break
+
                 if ((halign and isinstance(line, LTTextLineHorizontal)) or
                     (valign and isinstance(line, LTTextLineVertical))):
                     line.add(obj1)
@@ -565,7 +597,7 @@ class LTLayoutContainer(LTContainer):
         return
 
     # group_textlines: group neighboring lines to textboxes.
-    def group_textlines(self, laparams, lines):
+    def group_textlines(self, laparams, lines, otherobjs=None):
         plane = Plane(self.bbox)
         plane.extend(lines)
         boxes = {}
@@ -671,11 +703,11 @@ class LTLayoutContainer(LTContainer):
             obj.analyze(laparams)
         if not textobjs:
             return
-        textlines = list(self.group_objects(laparams, textobjs))
+        textlines = list(self.group_objects(laparams, textobjs, otherobjs))
         (empties, textlines) = fsplit(lambda obj: obj.is_empty(), textlines)
         for obj in empties:
             obj.analyze(laparams)
-        textboxes = list(self.group_textlines(laparams, textlines))
+        textboxes = list(self.group_textlines(laparams, textlines, otherobjs))
         if -1 <= laparams.boxes_flow and laparams.boxes_flow <= +1 and textboxes:
             self.groups = self.group_textboxes(laparams, textboxes)
             assigner = IndexAssigner()

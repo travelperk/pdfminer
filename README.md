@@ -1,7 +1,9 @@
 PDFMiner
 ========
 
-[![Build Status](https://travis-ci.org/euske/pdfminer.svg?branch=master)](https://travis-ci.org/euske/pdfminer)
+This is fork by Sergio Berna to be able to also detect line boundaries to allocate text lines and boxes.
+
+In this way a table rendered in the pdf wil render all the cells as separate textboxes and text lines.
 
 PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting 
