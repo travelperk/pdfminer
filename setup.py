@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from distutils.core import setup
+from setuptools import setup
 from pdfminer import __version__
 
 setup(
-    name='pdfminer_tk',
-    version=__version__,
+    name='pdfminertk',
+    version="1.0",
     description='PDF parser and analyzer',
     long_description='''PDFMiner is a tool for extracting information from PDF documents.
 Unlike other PDF-related tools, it focuses entirely on getting
@@ -41,4 +41,5 @@ PDF parser that can be used for other purposes instead of text analysis.''',
     'License :: OSI Approved :: MIT License',
     'Topic :: Text Processing',
     ],
+
     )

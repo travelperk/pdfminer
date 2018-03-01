@@ -62,9 +62,8 @@ test: cmap
 	$(PYTHON) -m pdfminer.ccitt
 	$(PYTHON) -m pdfminer.psparser
 	cd samples && $(MAKE) test
-upload: clean ls-s3
+upload: clean sdist
 	echo "Checking..."
-	flake8 pdfminer
 	echo "** Uploading..."
 	s3pypi --bucket travelperk-pypi
 	echo "** Upload finished!"
@@ -72,5 +71,5 @@ upload: clean ls-s3
 
 ls-s3:
 	echo "** Listing contents on S3 bucket:"
-	aws s3 ls travelperk-pypi/pdfminer_tk/
+	aws s3 ls travelperk-pypi/pdfminertk/
 
