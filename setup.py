@@ -3,7 +3,7 @@ from distutils.core import setup
 from pdfminer import __version__
 
 setup(
-    name='pdfminer',
+    name='pdfminer_tk',
     version=__version__,
     description='PDF parser and analyzer',
     long_description='''PDFMiner is a tool for extracting information from PDF documents.
